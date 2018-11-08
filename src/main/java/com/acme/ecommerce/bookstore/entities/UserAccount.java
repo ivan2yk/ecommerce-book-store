@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -22,6 +23,8 @@ public class UserAccount {
     private String phone;
     private Boolean enabled = Boolean.TRUE;
     private Set<UserRole> userRoles = new HashSet<>();
+    private List<UserShipping> userShippings;
+    private List<UserPayment> userPayments;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -100,6 +103,24 @@ public class UserAccount {
 
     public void setUserRoles(Set<UserRole> userRoles) {
         this.userRoles = userRoles;
+    }
+
+    @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    public List<UserShipping> getUserShippings() {
+        return userShippings;
+    }
+
+    public void setUserShippings(List<UserShipping> userShippings) {
+        this.userShippings = userShippings;
+    }
+
+    @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    public List<UserPayment> getUserPayments() {
+        return userPayments;
+    }
+
+    public void setUserPayments(List<UserPayment> userPayments) {
+        this.userPayments = userPayments;
     }
 
     @Override

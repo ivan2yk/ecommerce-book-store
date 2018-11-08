@@ -24,10 +24,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String[] PUBLIC_MATCHERS = {"/css/**",
             "/js/**",
             "/image/**",
+            "/fonts/**",
             "/",
             "/newUser",
             "/forgetPassword",
-            "/bookshelf",
+            "/bookShelf",
             "/bookDetail"
     };
 

@@ -1,6 +1,8 @@
 package com.acme.ecommerce.bookstore.services;
 
 import com.acme.ecommerce.bookstore.entities.UserAccount;
+import com.acme.ecommerce.bookstore.entities.UserBilling;
+import com.acme.ecommerce.bookstore.entities.UserPayment;
 import com.acme.ecommerce.bookstore.entities.UserRole;
 import com.acme.ecommerce.bookstore.entities.security.PasswordResetToken;
 
@@ -22,6 +24,12 @@ public interface UserAccountService {
 
     UserAccount createUser(UserAccount userAccount, Set<UserRole> userRoles);
 
+    UserAccount save(UserAccount userAccount);
+
     void deleteByEmail(String email);
+
+    void updateUserBilling(UserBilling userBilling, UserPayment userPayment, UserAccount userAccount);
+
+    void setUserDefaultPayment(Long idDefaultPaymentId, UserAccount userAccount);
 
 }

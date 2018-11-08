@@ -15,6 +15,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @SpringBootApplication
@@ -29,24 +30,28 @@ public class EcommerceBookStoreApplication {
     @Bean
     public CommandLineRunner seedDatabase(UserAccountService userAccountService) {
         return strings -> {
-            UserAccount userAccount = new UserAccount();
-            userAccount.setFirstName("Ivan");
-            userAccount.setLastName("Leiva");
-            userAccount.setUserName("i");
-            userAccount.setPassword(PasswordUtils.getEncoder().encode("i"));
-            userAccount.setEmail("ileiva@acme.com");
+            Optional<UserAccount> userAccountOptional = userAccountService.findByUserName("i");
 
-            Set<UserRole> userRoles = new HashSet<>();
-            Role role = new Role();
-            role.setId(1L);
-            role.setName(RoleEnum.ROLE_USER.toString());
-            userRoles.add(new UserRole(role, userAccount));
+            if (!userAccountOptional.isPresent()) {
+                UserAccount userAccount = new UserAccount();
+                userAccount.setFirstName("Ivan");
+                userAccount.setLastName("Leiva");
+                userAccount.setUserName("i");
+                userAccount.setPassword(PasswordUtils.getEncoder().encode("i"));
+                userAccount.setEmail("ileiva@acme.com");
 
-            try {
-                userAccountService.deleteByEmail(userAccount.getEmail());
-                userAccountService.createUser(userAccount, userRoles);
-            } catch (UserAlreadyExistsException ex) {
-                logger.error(ex.getMessage(), ex.getCause());
+                Set<UserRole> userRoles = new HashSet<>();
+                Role role = new Role();
+                role.setId(1L);
+                role.setName(RoleEnum.ROLE_USER.toString());
+                userRoles.add(new UserRole(role, userAccount));
+
+                try {
+                    userAccountService.deleteByEmail(userAccount.getEmail());
+                    userAccountService.createUser(userAccount, userRoles);
+                } catch (UserAlreadyExistsException ex) {
+                    logger.error(ex.getMessage(), ex.getCause());
+                }
             }
         };
     }

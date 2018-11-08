@@ -1,14 +1,12 @@
 package com.acme.ecommerce.bookstore.controllers;
 
-import com.acme.ecommerce.bookstore.entities.Book;
-import com.acme.ecommerce.bookstore.entities.Role;
-import com.acme.ecommerce.bookstore.entities.UserAccount;
-import com.acme.ecommerce.bookstore.entities.UserRole;
+import com.acme.ecommerce.bookstore.entities.*;
 import com.acme.ecommerce.bookstore.entities.security.PasswordResetToken;
-import com.acme.ecommerce.bookstore.services.BookService;
 import com.acme.ecommerce.bookstore.services.RoleService;
 import com.acme.ecommerce.bookstore.services.UserAccountService;
+import com.acme.ecommerce.bookstore.services.UserPaymentService;
 import com.acme.ecommerce.bookstore.utils.PasswordUtils;
+import com.acme.ecommerce.bookstore.utils.USConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -33,10 +31,12 @@ public class HomeController {
 
     private UserDetailsService jdbcSecurityService;
     private UserAccountService userAccountService;
+    private UserPaymentService userPaymentService;
     private RoleService roleService;
-    private BookService bookService;
 
     private static final String INVALID_TOKEN_MESSAGE = "Invalid token";
+    private static final String INVALID_USER_MESSAGE = "Invalid user";
+    private static final String INVALID_USER_PAYMENT_MESSAGE = "Payment does not exists";
     private static final String NO_ROLE_PRESENT_MESSAGE = "No role defined";
     private static final String ROLE_USER = "ROLE_USER";
 
@@ -44,12 +44,12 @@ public class HomeController {
 
     public HomeController(@Qualifier("jdbcUserDetailServiceImpl") UserDetailsService userDetailsService,
                           UserAccountService userAccountService,
-                          RoleService roleService,
-                          BookService bookService) {
+                          UserPaymentService userPaymentService,
+                          RoleService roleService) {
         this.jdbcSecurityService = userDetailsService;
         this.userAccountService = userAccountService;
+        this.userPaymentService = userPaymentService;
         this.roleService = roleService;
-        this.bookService = bookService;
     }
 
     @RequestMapping("/")
@@ -61,39 +61,6 @@ public class HomeController {
     public String login(Model model) {
         model.addAttribute("classActiveLogin", true);
         return "myAccount";
-    }
-
-    @RequestMapping("/bookshelf")
-    public String bookshelf(Model model) {
-        List<Book> allBooks = bookService.findAll();
-
-        model.addAttribute("bookList", allBooks);
-
-        return "bookshelf";
-    }
-
-    @RequestMapping("/bookDetail")
-    public String bookDetail(@RequestParam("id") Long id, Model model, Principal principal) {
-        if (principal != null) {
-            String userName = principal.getName();
-            Optional<UserAccount> userAccount = userAccountService.findByUserName(userName);
-            if (!userAccount.isPresent()) {
-                return "redirect:/badRequest";
-            }
-            model.addAttribute("user", userAccount.get());
-        }
-
-        Optional<Book> bookOptional = bookService.findById(id);
-        if (!bookOptional.isPresent()) {
-            return "redirect:/badRequest";
-        }
-
-        model.addAttribute("book", bookOptional.get());
-        List<Integer> qtyList = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-        model.addAttribute("qtyList", qtyList);
-        model.addAttribute("qty", 1);
-
-        return "bookDetail";
     }
 
     @PostMapping("/forgetPassword")
@@ -157,6 +124,266 @@ public class HomeController {
         model.addAttribute("emailSent", "true");
 
         return "myAccount";
+    }
+
+    @RequestMapping("/myProfile")
+    public String myProfile(Model model, Principal principal) {
+        Optional<UserAccount> userAccountOptional = userAccountService.findByUserName(principal.getName());
+
+        if (!userAccountOptional.isPresent()) {
+            model.addAttribute("message", INVALID_USER_MESSAGE);
+            return "redirect:/badRequest";
+        }
+
+        UserAccount userAccount = userAccountOptional.get();
+
+        model.addAttribute("user", userAccount);
+        model.addAttribute("userPaymentList", userAccount.getUserPayments());
+        model.addAttribute("userShippingList", userAccount.getUserShippings());
+
+        model.addAttribute("listOfCreditCards", true);
+        model.addAttribute("listOfShippingAddresses", true);
+
+        List<String> usStatesCodes = USConstants.US_STATES_CODES;
+        Collections.sort(usStatesCodes);
+        model.addAttribute("stateList", usStatesCodes);
+
+        model.addAttribute("classActiveEdite", true);
+
+        return "myProfile";
+    }
+
+    @RequestMapping("/listOfCreditCards")
+    public String listOfCreditsCards(Model model, Principal principal) {
+        Optional<UserAccount> userAccountOptional = userAccountService.findByUserName(principal.getName());
+
+        if (!userAccountOptional.isPresent()) {
+            model.addAttribute("message", INVALID_USER_MESSAGE);
+            return "redirect:/badRequest";
+        }
+
+        UserAccount userAccount = userAccountOptional.get();
+        model.addAttribute("user", userAccount);
+        model.addAttribute("userPaymentList", userAccount.getUserPayments());
+        model.addAttribute("userShippingList", userAccount.getUserShippings());
+
+        model.addAttribute("listOfCreditCards", true);
+        model.addAttribute("classActiveBilling", true);
+        model.addAttribute("listOfShippingAddresses", true);
+
+        return "myProfile";
+    }
+
+    @RequestMapping("/listOfShippingAddresses")
+    public String listOfShippingAddresses(Model model, Principal principal) {
+        Optional<UserAccount> userAccountOptional = userAccountService.findByUserName(principal.getName());
+
+        if (!userAccountOptional.isPresent()) {
+            model.addAttribute("message", INVALID_USER_MESSAGE);
+            return "redirect:/badRequest";
+        }
+
+        UserAccount userAccount = userAccountOptional.get();
+        model.addAttribute("user", userAccount);
+        model.addAttribute("userPaymentList", userAccount.getUserPayments());
+        model.addAttribute("userShippingList", userAccount.getUserShippings());
+
+        model.addAttribute("listOfCreditCards", true);
+        model.addAttribute("classActiveShipping", true);
+        model.addAttribute("listOfShippingAddresses", true);
+
+        return "myProfile";
+    }
+
+    @RequestMapping("/addNewCreditCard")
+    public String addNewCreditCard(Model model, Principal principal) {
+        Optional<UserAccount> userAccountOptional = userAccountService.findByUserName(principal.getName());
+
+        if (!userAccountOptional.isPresent()) {
+            model.addAttribute("message", INVALID_USER_MESSAGE);
+            return "redirect:/badRequest";
+        }
+
+        UserAccount userAccount = userAccountOptional.get();
+        model.addAttribute("user", userAccount);
+
+        model.addAttribute("addNewCreditCard", true);
+        model.addAttribute("classActiveBilling", true);
+        model.addAttribute("listOfShippingAddresses", true);
+
+        UserPayment userPayment = new UserPayment();
+        UserBilling userBilling = new UserBilling();
+
+        model.addAttribute("userPayment", userPayment);
+        model.addAttribute("userBilling", userBilling);
+
+        List<String> usStatesCodes = USConstants.US_STATES_CODES;
+        Collections.sort(usStatesCodes);
+
+        model.addAttribute("stateList", usStatesCodes);
+        model.addAttribute("userPaymentList", userAccount.getUserPayments());
+        model.addAttribute("userShipping", userAccount.getUserShippings());
+
+        return "myProfile";
+    }
+
+    @PostMapping("/addNewCreditCard")
+    public String addNewCreditCard(@ModelAttribute("userPayment") UserPayment userPayment,
+                                   @ModelAttribute("userBilling") UserBilling userBilling,
+                                   Principal principal,
+                                   Model model) {
+        Optional<UserAccount> userAccountOptional = userAccountService.findByUserName(principal.getName());
+
+        if (!userAccountOptional.isPresent()) {
+            model.addAttribute("message", INVALID_USER_MESSAGE);
+            return "redirect:/badRequest";
+        }
+
+        UserAccount userAccount = userAccountOptional.get();
+        userAccountService.updateUserBilling(userBilling, userPayment, userAccount);
+
+        model.addAttribute("user", userAccount);
+        model.addAttribute("userPaymentList", userAccount.getUserPayments());
+        model.addAttribute("userShippingList", userAccount.getUserShippings());
+        model.addAttribute("listOfCreditCards", true);
+        model.addAttribute("classActiveBilling", true);
+        model.addAttribute("listOfShippingAddresses", true);
+
+        return "myProfile";
+    }
+
+    @RequestMapping("/updateCreditCard")
+    public String updateCreditCard(@ModelAttribute("id") Long idPaymentCreditCard, Principal principal, Model model) {
+        Optional<UserAccount> userAccountOptional = userAccountService.findByUserName(principal.getName());
+
+        logger.info("Updating credit card: {}", idPaymentCreditCard);
+
+        if (!userAccountOptional.isPresent()) {
+            model.addAttribute("message", INVALID_USER_MESSAGE);
+            return "redirect:/badRequest";
+        }
+        UserAccount userAccount = userAccountOptional.get();
+        Optional<UserPayment> userPaymentOptional = userPaymentService.findById(idPaymentCreditCard);
+
+        if (!userPaymentOptional.isPresent()) {
+            model.addAttribute("message", INVALID_USER_PAYMENT_MESSAGE);
+            return "redirect:/badRequest";
+        }
+        UserPayment userPayment = userPaymentOptional.get();
+
+        if (!userAccount.getId().equals(userPayment.getUserAccount().getId())) {
+            return "redirect:/badRequest";
+        }
+
+        model.addAttribute("user", userAccount);
+        UserBilling userBilling = userPayment.getUserBilling();
+        model.addAttribute("userPayment", userPayment);
+        model.addAttribute("userBilling", userBilling);
+
+        List<String> usStatesCodes = USConstants.US_STATES_CODES;
+        Collections.sort(usStatesCodes);
+
+        model.addAttribute("stateList", usStatesCodes);
+        model.addAttribute("stateList", usStatesCodes);
+        model.addAttribute("addNewCreditCard", true);
+        model.addAttribute("classActiveBilling", true);
+        model.addAttribute("listOfShippingAddresses", true);
+
+        model.addAttribute("userPaymentList", userAccount.getUserPayments());
+        model.addAttribute("userShippingList", userAccount.getUserShippings());
+
+        return "myProfile";
+    }
+
+    @RequestMapping("/removeCreditCard")
+    public String removeCreditCard(@ModelAttribute("id") Long idPaymentCreditCard, Principal principal, Model model) {
+        Optional<UserAccount> userAccountOptional = userAccountService.findByUserName(principal.getName());
+
+        logger.info("Updating credit card: {}", idPaymentCreditCard);
+
+        if (!userAccountOptional.isPresent()) {
+            model.addAttribute("message", INVALID_USER_MESSAGE);
+            return "redirect:/badRequest";
+        }
+        UserAccount userAccount = userAccountOptional.get();
+        Optional<UserPayment> userPaymentOptional = userPaymentService.findById(idPaymentCreditCard);
+
+        if (!userPaymentOptional.isPresent()) {
+            model.addAttribute("message", INVALID_USER_PAYMENT_MESSAGE);
+            return "redirect:/badRequest";
+        }
+        UserPayment userPayment = userPaymentOptional.get();
+
+        if (!userAccount.getId().equals(userPayment.getUserAccount().getId())) {
+            return "redirect:/badRequest";
+        }
+        userPaymentService.deleteById(idPaymentCreditCard);
+
+        model.addAttribute("user", userAccount);
+        model.addAttribute("listOfCreditCards", true);
+        model.addAttribute("classActiveBilling", true);
+        model.addAttribute("listOfShippingAddresses", true);
+
+        model.addAttribute("userPaymentList", userAccount.getUserPayments());
+        model.addAttribute("userShippingList", userAccount.getUserShippings());
+
+        return "myProfile";
+    }
+
+    @PostMapping("/setDefaultPayment")
+    public String setDefaultPayment(@ModelAttribute("defaultUserPaymentId") Long idDefaultPaymentId, Principal principal, Model model) {
+        Optional<UserAccount> userAccountOptional = userAccountService.findByUserName(principal.getName());
+
+        logger.info("Setting default credit card: {}", idDefaultPaymentId);
+
+        if (!userAccountOptional.isPresent()) {
+            model.addAttribute("message", INVALID_USER_MESSAGE);
+            return "redirect:/badRequest";
+        }
+        UserAccount userAccount = userAccountOptional.get();
+
+        logger.info("Setting default payment: {}, {}", idDefaultPaymentId, userAccount);
+
+        userAccountService.setUserDefaultPayment(idDefaultPaymentId, userAccount);
+
+        model.addAttribute("user", userAccount);
+        model.addAttribute("listOfCreditCards", true);
+        model.addAttribute("classActiveBilling", true);
+        model.addAttribute("listOfShippingAddresses", true);
+
+        model.addAttribute("userPaymentList", userAccount.getUserPayments());
+        model.addAttribute("userShippingList", userAccount.getUserShippings());
+
+        return "myProfile";
+    }
+
+    @RequestMapping("/addNewShippingAddress")
+    public String addNewShippingAddress(Model model, Principal principal) {
+        Optional<UserAccount> userAccountOptional = userAccountService.findByUserName(principal.getName());
+
+        if (!userAccountOptional.isPresent()) {
+            model.addAttribute("message", INVALID_USER_MESSAGE);
+            return "redirect:/badRequest";
+        }
+
+        UserAccount userAccount = userAccountOptional.get();
+        model.addAttribute("user", userAccount);
+        model.addAttribute("addNewShippingAddress", true);
+        model.addAttribute("classActiveShipping", true);
+        model.addAttribute("listOfShippingAddresses", true);
+
+        UserShipping userShipping = new UserShipping();
+
+        model.addAttribute("userShipping", userShipping);
+
+        List<String> usStatesCodes = USConstants.US_STATES_CODES;
+        Collections.sort(usStatesCodes);
+
+        model.addAttribute("stateList", usStatesCodes);
+        model.addAttribute("userPaymentList", userAccount.getUserPayments());
+        model.addAttribute("userShippingList", userAccount.getUserShippings());
+
+        return "myProfile";
     }
 
     @RequestMapping("/newUser")
