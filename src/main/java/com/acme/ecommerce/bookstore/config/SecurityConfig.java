@@ -4,7 +4,6 @@ import com.acme.ecommerce.bookstore.utils.PasswordUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -20,19 +19,20 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private Environment environment;
     private UserDetailsService userAccountService;
 
     private static final String[] PUBLIC_MATCHERS = {"/css/**",
             "/js/**",
             "/image/**",
             "/",
-            "/myAccount"};
+            "/newUser",
+            "/forgetPassword",
+            "/bookshelf",
+            "/bookDetail"
+    };
 
     @Autowired
-    public SecurityConfig(Environment environment,
-                          @Qualifier("jdbcUserDetailServiceImpl") UserDetailsService userAccountService) {
-        this.environment = environment;
+    public SecurityConfig(@Qualifier("jdbcUserDetailServiceImpl") UserDetailsService userAccountService) {
         this.userAccountService = userAccountService;
     }
 

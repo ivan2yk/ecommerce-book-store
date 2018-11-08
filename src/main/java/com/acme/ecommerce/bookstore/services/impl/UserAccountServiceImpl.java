@@ -9,6 +9,7 @@ import com.acme.ecommerce.bookstore.repositories.RoleRepository;
 import com.acme.ecommerce.bookstore.repositories.UserAccountRepository;
 import com.acme.ecommerce.bookstore.services.UserAccountService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.Set;
@@ -53,6 +54,7 @@ public class UserAccountServiceImpl implements UserAccountService {
     }
 
     @Override
+    @Transactional
     public UserAccount createUser(UserAccount userAccount, Set<UserRole> userRoles) {
         Optional<UserAccount> byUserName = userAccountRepository.findByUserName(userAccount.getUserName());
 
@@ -66,6 +68,12 @@ public class UserAccountServiceImpl implements UserAccountService {
         userAccount.getUserRoles().addAll(userRoles);
 
         return userAccountRepository.save(userAccount);
+    }
+
+    @Override
+    @Transactional
+    public void deleteByEmail(String email) {
+        userAccountRepository.deleteByEmail(email);
     }
 
 }

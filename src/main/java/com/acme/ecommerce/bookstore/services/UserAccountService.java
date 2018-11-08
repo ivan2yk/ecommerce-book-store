@@ -22,4 +22,6 @@ public interface UserAccountService {
 
     UserAccount createUser(UserAccount userAccount, Set<UserRole> userRoles);
 
+    void deleteByEmail(String email);
+
 }

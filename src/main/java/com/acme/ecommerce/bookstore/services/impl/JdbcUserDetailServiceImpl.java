@@ -36,7 +36,7 @@ public class JdbcUserDetailServiceImpl implements UserDetailsService {
                         userAccount.getUserRoles().stream()
                                 .map(userRole -> new UserAuthority(userRole.getRole().getName())).collect(Collectors.toList())
                 ))
-                .orElseThrow(() -> new UsernameNotFoundException(String.format("User %s has not fould", s)));
+                .orElseThrow(() -> new UsernameNotFoundException(String.format("User %s has not found", s)));
     }
 
 }
