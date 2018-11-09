@@ -7,8 +7,7 @@ import com.acme.ecommerce.bookstore.services.UserAccountService;
 import com.acme.ecommerce.bookstore.services.UserPaymentService;
 import com.acme.ecommerce.bookstore.utils.PasswordUtils;
 import com.acme.ecommerce.bookstore.utils.USConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,7 +16,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
@@ -26,6 +28,7 @@ import java.util.*;
 /**
  * Created by Ivan on 29/10/2018.
  */
+@Slf4j
 @Controller
 public class HomeController {
 
@@ -39,8 +42,6 @@ public class HomeController {
     private static final String INVALID_USER_PAYMENT_MESSAGE = "Payment does not exists";
     private static final String NO_ROLE_PRESENT_MESSAGE = "No role defined";
     private static final String ROLE_USER = "ROLE_USER";
-
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public HomeController(@Qualifier("jdbcUserDetailServiceImpl") UserDetailsService userDetailsService,
                           UserAccountService userAccountService,
@@ -67,7 +68,7 @@ public class HomeController {
     public String forgetPassword(@ModelAttribute("email") String email, Model model) {
         model.addAttribute("classActiveForgetPassword", true);
 
-        logger.info("Forget password for email: {}", email);
+        log.info("Forget password for email: {}", email);
 
         Optional<UserAccount> userAccountOptional = userAccountService.findByEmail(email);
 
@@ -86,7 +87,7 @@ public class HomeController {
         model.addAttribute("email", email);
         model.addAttribute("username", username);
 
-        logger.info("Creating new user. email: {}, userName: {}", email, username);
+        log.info("Creating new user. email: {}, userName: {}", email, username);
 
         Optional<UserAccount> byUserNameOptional = userAccountService.findByUserName(username);
         if (byUserNameOptional.isPresent()) {
@@ -256,7 +257,7 @@ public class HomeController {
     public String updateCreditCard(@ModelAttribute("id") Long idPaymentCreditCard, Principal principal, Model model) {
         Optional<UserAccount> userAccountOptional = userAccountService.findByUserName(principal.getName());
 
-        logger.info("Updating credit card: {}", idPaymentCreditCard);
+        log.info("Updating credit card: {}", idPaymentCreditCard);
 
         if (!userAccountOptional.isPresent()) {
             model.addAttribute("message", INVALID_USER_MESSAGE);
@@ -299,7 +300,7 @@ public class HomeController {
     public String removeCreditCard(@ModelAttribute("id") Long idPaymentCreditCard, Principal principal, Model model) {
         Optional<UserAccount> userAccountOptional = userAccountService.findByUserName(principal.getName());
 
-        logger.info("Updating credit card: {}", idPaymentCreditCard);
+        log.info("Updating credit card: {}", idPaymentCreditCard);
 
         if (!userAccountOptional.isPresent()) {
             model.addAttribute("message", INVALID_USER_MESSAGE);
@@ -334,7 +335,7 @@ public class HomeController {
     public String setDefaultPayment(@ModelAttribute("defaultUserPaymentId") Long idDefaultPaymentId, Principal principal, Model model) {
         Optional<UserAccount> userAccountOptional = userAccountService.findByUserName(principal.getName());
 
-        logger.info("Setting default credit card: {}", idDefaultPaymentId);
+        log.info("Setting default credit card: {}", idDefaultPaymentId);
 
         if (!userAccountOptional.isPresent()) {
             model.addAttribute("message", INVALID_USER_MESSAGE);
@@ -342,7 +343,7 @@ public class HomeController {
         }
         UserAccount userAccount = userAccountOptional.get();
 
-        logger.info("Setting default payment: {}, {}", idDefaultPaymentId, userAccount);
+        log.info("Setting default payment: {}, {}", idDefaultPaymentId, userAccount);
 
         userAccountService.setUserDefaultPayment(idDefaultPaymentId, userAccount);
 
