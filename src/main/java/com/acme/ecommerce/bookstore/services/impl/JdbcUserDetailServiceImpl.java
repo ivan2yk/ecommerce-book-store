@@ -1,7 +1,7 @@
 package com.acme.ecommerce.bookstore.services.impl;
 
 import com.acme.ecommerce.bookstore.entities.security.UserAuthority;
-import com.acme.ecommerce.bookstore.repositories.UserAccountRepository;
+import com.acme.ecommerce.bookstore.dao.data.UserAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;

@@ -40,6 +40,12 @@ public class PasswordResetToken {
         this.expiryDateTime = this.calculateExpiryDate(DEFAULT_EXPIRATION_TIME_IN_MINUTES);
     }
 
+    public PasswordResetToken(final String token, final UserAccount userAccount, final LocalDateTime expiryDateTime) {
+        this.token = token;
+        this.userAccount = userAccount;
+        this.expiryDateTime = expiryDateTime;
+    }
+
     private LocalDateTime calculateExpiryDate(Integer expiryTimeInMinutes) {
         LocalDateTime now = LocalDateTime.now();
         return now.plusMinutes(expiryTimeInMinutes);

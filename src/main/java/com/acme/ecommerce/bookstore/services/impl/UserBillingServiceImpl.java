@@ -1,7 +1,7 @@
 package com.acme.ecommerce.bookstore.services.impl;
 
 import com.acme.ecommerce.bookstore.entities.UserBilling;
-import com.acme.ecommerce.bookstore.repositories.UserBillingRepository;
+import com.acme.ecommerce.bookstore.dao.data.UserBillingRepository;
 import com.acme.ecommerce.bookstore.services.UserBillingService;
 import org.springframework.stereotype.Service;
 

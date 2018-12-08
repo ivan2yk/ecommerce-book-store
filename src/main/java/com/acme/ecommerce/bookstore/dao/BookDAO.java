@@ -1,4 +1,4 @@
-package com.acme.ecommerce.bookstore.services;
+package com.acme.ecommerce.bookstore.dao;
 
 import com.acme.ecommerce.bookstore.entities.Book;
 
@@ -6,9 +6,13 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Created by Ivan on 7/11/2018.
+ * Created by Ivan on 4/12/2018.
  */
-public interface BookService {
+public interface BookDAO {
+
+    Book save(Book book);
+
+    void deleteAll();
 
     List<Book> findAll();
 

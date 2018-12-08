@@ -1,7 +1,7 @@
 package com.acme.ecommerce.bookstore.services.impl;
 
 import com.acme.ecommerce.bookstore.entities.Role;
-import com.acme.ecommerce.bookstore.repositories.RoleRepository;
+import com.acme.ecommerce.bookstore.dao.data.RoleRepository;
 import com.acme.ecommerce.bookstore.services.RoleService;
 import org.springframework.stereotype.Service;
 

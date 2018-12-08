@@ -1,15 +1,15 @@
 package com.acme.ecommerce.bookstore.services.impl;
 
+import com.acme.ecommerce.bookstore.dao.PasswordResetTokenDAO;
+import com.acme.ecommerce.bookstore.dao.UserAccountDAO;
+import com.acme.ecommerce.bookstore.dao.data.RoleRepository;
+import com.acme.ecommerce.bookstore.dao.data.UserPaymentRepository;
 import com.acme.ecommerce.bookstore.entities.UserAccount;
 import com.acme.ecommerce.bookstore.entities.UserBilling;
 import com.acme.ecommerce.bookstore.entities.UserPayment;
 import com.acme.ecommerce.bookstore.entities.UserRole;
 import com.acme.ecommerce.bookstore.entities.security.PasswordResetToken;
 import com.acme.ecommerce.bookstore.exception.UserAlreadyExistsException;
-import com.acme.ecommerce.bookstore.repositories.PasswordResetTokenRepository;
-import com.acme.ecommerce.bookstore.repositories.RoleRepository;
-import com.acme.ecommerce.bookstore.repositories.UserAccountRepository;
-import com.acme.ecommerce.bookstore.repositories.UserPaymentRepository;
 import com.acme.ecommerce.bookstore.services.UserAccountService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,46 +24,46 @@ import java.util.Set;
 @Service
 public class UserAccountServiceImpl implements UserAccountService {
 
-    private PasswordResetTokenRepository passwordResetTokenRepository;
-    private UserAccountRepository userAccountRepository;
+    private PasswordResetTokenDAO passwordResetTokenDAO;
+    private UserAccountDAO userAccountDAO;
     private RoleRepository roleRepository;
     private UserPaymentRepository userPaymentRepository;
 
-    public UserAccountServiceImpl(PasswordResetTokenRepository passwordResetTokenRepository,
-                                  UserAccountRepository userAccountRepository,
+    public UserAccountServiceImpl(PasswordResetTokenDAO passwordResetTokenDAO,
+                                  UserAccountDAO userAccountDAO,
                                   RoleRepository roleRepository,
                                   UserPaymentRepository userPaymentRepository) {
-        this.passwordResetTokenRepository = passwordResetTokenRepository;
-        this.userAccountRepository = userAccountRepository;
+        this.passwordResetTokenDAO = passwordResetTokenDAO;
+        this.userAccountDAO = userAccountDAO;
         this.roleRepository = roleRepository;
         this.userPaymentRepository = userPaymentRepository;
     }
 
     @Override
     public Optional<PasswordResetToken> getPasswordResetToken(String token) {
-        return passwordResetTokenRepository.findByToken(token);
+        return passwordResetTokenDAO.findByToken(token);
     }
 
     @Override
     public void createPasswordResetTokenForUser(UserAccount userAccount, String token) {
         PasswordResetToken passwordResetToken = new PasswordResetToken(token, userAccount);
-        passwordResetTokenRepository.save(passwordResetToken);
+        passwordResetTokenDAO.save(passwordResetToken);
     }
 
     @Override
     public Optional<UserAccount> findByUserName(String userName) {
-        return userAccountRepository.findByUserName(userName);
+        return userAccountDAO.findByUserName(userName);
     }
 
     @Override
     public Optional<UserAccount> findByEmail(String email) {
-        return userAccountRepository.findByEmail(email);
+        return userAccountDAO.findByEmail(email);
     }
 
     @Override
     @Transactional
     public UserAccount createUser(UserAccount userAccount, Set<UserRole> userRoles) {
-        Optional<UserAccount> byUserName = userAccountRepository.findByUserName(userAccount.getUserName());
+        Optional<UserAccount> byUserName = userAccountDAO.findByUserName(userAccount.getUserName());
 
         if (byUserName.isPresent()) {
             throw new UserAlreadyExistsException("User already exists. Nothing will be done.");
@@ -74,19 +74,19 @@ public class UserAccountServiceImpl implements UserAccountService {
         }
         userAccount.getUserRoles().addAll(userRoles);
 
-        return userAccountRepository.save(userAccount);
+        return userAccountDAO.save(userAccount);
     }
 
     @Override
     @Transactional
     public UserAccount save(UserAccount userAccount) {
-        return userAccountRepository.save(userAccount);
+        return userAccountDAO.save(userAccount);
     }
 
     @Override
     @Transactional
     public void deleteByEmail(String email) {
-        userAccountRepository.deleteByEmail(email);
+        userAccountDAO.deleteByEmail(email);
     }
 
     @Override
