@@ -32,7 +32,7 @@ public class BookDAOJpaImpl implements BookDAO {
 
     @Override
     public void deleteAll() {
-
+        //do nothing
     }
 
     @Override
