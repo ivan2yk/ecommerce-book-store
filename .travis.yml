@@ -4,3 +4,10 @@ jdk:
   - oraclejdk8
 before_install:
   - chmod +x mvnw
+addons:
+  sonarcloud:
+    organization: "ivan2yk-github" # the key of the org you chose at step #3
+    token:
+      secure: "${SONAR_TOKEN}"
+script:
+  - sonar-scanner

@@ -2,7 +2,6 @@ package com.acme.ecommerce.bookstore.services.impl;
 
 import com.acme.ecommerce.bookstore.dao.BookDAO;
 import com.acme.ecommerce.bookstore.entities.Book;
-import com.acme.ecommerce.bookstore.dao.data.BookRepository;
 import com.acme.ecommerce.bookstore.services.BookService;
 import org.springframework.stereotype.Service;
 
