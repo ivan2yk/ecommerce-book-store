@@ -2,15 +2,14 @@ package com.acme.ecommerce.bookstore.services.impl;
 
 import com.acme.ecommerce.bookstore.dao.PasswordResetTokenDAO;
 import com.acme.ecommerce.bookstore.dao.UserAccountDAO;
+import com.acme.ecommerce.bookstore.dao.UserShippingDAO;
 import com.acme.ecommerce.bookstore.dao.data.RoleRepository;
 import com.acme.ecommerce.bookstore.dao.data.UserPaymentRepository;
-import com.acme.ecommerce.bookstore.entities.UserAccount;
-import com.acme.ecommerce.bookstore.entities.UserBilling;
-import com.acme.ecommerce.bookstore.entities.UserPayment;
-import com.acme.ecommerce.bookstore.entities.UserRole;
+import com.acme.ecommerce.bookstore.entities.*;
 import com.acme.ecommerce.bookstore.entities.security.PasswordResetToken;
 import com.acme.ecommerce.bookstore.exception.UserAlreadyExistsException;
 import com.acme.ecommerce.bookstore.services.UserAccountService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,21 +21,25 @@ import java.util.Set;
  * Created by Ivan on 30/10/2018.
  */
 @Service
+@Slf4j
 public class UserAccountServiceImpl implements UserAccountService {
 
     private PasswordResetTokenDAO passwordResetTokenDAO;
     private UserAccountDAO userAccountDAO;
     private RoleRepository roleRepository;
     private UserPaymentRepository userPaymentRepository;
+    private UserShippingDAO userShippingDAO;
 
     public UserAccountServiceImpl(PasswordResetTokenDAO passwordResetTokenDAO,
                                   UserAccountDAO userAccountDAO,
                                   RoleRepository roleRepository,
-                                  UserPaymentRepository userPaymentRepository) {
+                                  UserPaymentRepository userPaymentRepository,
+                                  UserShippingDAO userShippingDAO) {
         this.passwordResetTokenDAO = passwordResetTokenDAO;
         this.userAccountDAO = userAccountDAO;
         this.roleRepository = roleRepository;
         this.userPaymentRepository = userPaymentRepository;
+        this.userShippingDAO = userShippingDAO;
     }
 
     @Override
@@ -113,6 +116,36 @@ public class UserAccountServiceImpl implements UserAccountService {
             } else {
                 userPayment.setDefaultPayment(false);
                 userPaymentRepository.save(userPayment);
+            }
+        }
+    }
+
+    @Override
+    @Transactional
+    public void updateUserShipping(UserShipping userShipping, UserAccount userAccount) {
+        userShipping.setUserAccount(userAccount);
+        userShipping.setUserShippingDefault(true);
+        userAccount.getUserShippings().add(userShipping);
+        this.save(userAccount);
+    }
+
+    @Override
+    public void setUserDefaultShippingAddress(Long idDefaultShippingAddressId, UserAccount userAccount) {
+        Long userAccountId = userAccount.getId();
+
+        log.info("Finding addresses to user: {}", userAccountId);
+
+        List<UserShipping> userShippingList = userShippingDAO.findByUserAccountId(userAccountId);
+
+        log.info("Setting default shipping address to: {}", idDefaultShippingAddressId);
+
+        for (UserShipping userShipping : userShippingList) {
+            if (userShipping.getId().equals(idDefaultShippingAddressId)) {
+                userShipping.setUserShippingDefault(true);
+                userShippingDAO.save(userShipping);
+            } else {
+                userShipping.setUserShippingDefault(false);
+                userShippingDAO.save(userShipping);
             }
         }
     }

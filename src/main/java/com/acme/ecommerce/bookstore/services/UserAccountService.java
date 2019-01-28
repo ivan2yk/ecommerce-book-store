@@ -1,9 +1,6 @@
 package com.acme.ecommerce.bookstore.services;
 
-import com.acme.ecommerce.bookstore.entities.UserAccount;
-import com.acme.ecommerce.bookstore.entities.UserBilling;
-import com.acme.ecommerce.bookstore.entities.UserPayment;
-import com.acme.ecommerce.bookstore.entities.UserRole;
+import com.acme.ecommerce.bookstore.entities.*;
 import com.acme.ecommerce.bookstore.entities.security.PasswordResetToken;
 
 import java.util.Optional;
@@ -32,4 +29,8 @@ public interface UserAccountService {
 
     void setUserDefaultPayment(Long idDefaultPaymentId, UserAccount userAccount);
 
+    void updateUserShipping(UserShipping userShipping, UserAccount userAccount);
+
+    void setUserDefaultShippingAddress(Long idDefaultShippingAddressId, UserAccount userAccount);
+    
 }

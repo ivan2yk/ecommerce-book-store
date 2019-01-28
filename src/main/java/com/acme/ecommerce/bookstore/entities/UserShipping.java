@@ -26,6 +26,7 @@ public class UserShipping {
     private String userShippingState;
     private String userShippingCountry;
     private String userShippingZipcode;
+    private Boolean userShippingDefault;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private UserAccount userAccount;

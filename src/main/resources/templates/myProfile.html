@@ -298,8 +298,12 @@
                             <div class="panel-body"
                                  style="background-color: #ededed; margin-top: 20px;">
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item active"><a th:href="@{/listOfCreditCards}" th:style="${listOfCreditCards}? 'color:red'">List of Credit Cards</a></li>
-                                    <li class="breadcrumb-item active"><a th:href="@{/addNewCreditCard}" th:style="${addNewCreditCard}? 'color:red'">Add(Update) Credit Card</a></li>
+                                    <li class="breadcrumb-item active"><a th:href="@{/listOfCreditCards}"
+                                                                          th:style="${listOfCreditCards}? 'color:red'">List
+                                        of Credit Cards</a></li>
+                                    <li class="breadcrumb-item active"><a th:href="@{/addNewCreditCard}"
+                                                                          th:style="${addNewCreditCard}? 'color:red'">Add(Update)
+                                        Credit Card</a></li>
                                 </ol>
 
                                 <div th:if="${listOfCreditCards}">
@@ -314,9 +318,14 @@
                                             </thead>
                                             <tbody>
                                             <tr th:each="userPayment : ${userPaymentList}">
-                                                <td><input type="radio" name="defaultUserPaymentId" th:value="${userPayment.id}" th:checked="${userPayment.defaultPayment}"/></td>
+                                                <td><input type="radio" name="defaultUserPaymentId"
+                                                           th:value="${userPayment.id}"
+                                                           th:checked="${userPayment.defaultPayment}"/></td>
                                                 <td th:text="${userPayment.cardName}"></td>
-                                                <td><a th:href="@{/updateCreditCard(id=${userPayment.id})}"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a th:href="@{/removeCreditCard(id=${userPayment.id})}"><i class="fa fa-times"></i></a></td>
+                                                <td><a th:href="@{/updateCreditCard(id=${userPayment.id})}"><i
+                                                        class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a
+                                                        th:href="@{/removeCreditCard(id=${userPayment.id})}"><i
+                                                        class="fa fa-times"></i></a></td>
                                             </tr>
                                             </tbody>
                                         </table>
@@ -332,7 +341,9 @@
 
                                         <div class="form-group">
                                             <h5>* Give a name for your card:</h5>
-                                            <input type="text" class="form-control" id="cardName" placeholder="Card Name" th:name="cardName" required="required" th:value="${userPayment.cardName}"/>
+                                            <input type="text" class="form-control" id="cardName"
+                                                   placeholder="Card Name" th:name="cardName" required="required"
+                                                   th:value="${userPayment.cardName}"/>
                                         </div>
 
                                         <!-- Billing Address -->
@@ -353,20 +364,20 @@
                                         <div class="form-group">
                                             <label for="billingAddress">* Street Address</label>
                                             <input
-                                                type="text"
-                                                class="form-control"
-                                                id="billingAddress"
-                                                placeholder="Street Address 1"
-                                                th:name="userBillingStreet1"
-                                                required="required"
-                                                th:value="${userBilling.userBillingStreet1}"/>
+                                                    type="text"
+                                                    class="form-control"
+                                                    id="billingAddress"
+                                                    placeholder="Street Address 1"
+                                                    th:name="userBillingStreet1"
+                                                    required="required"
+                                                    th:value="${userBilling.userBillingStreet1}"/>
                                             <input
-                                                type="text"
-                                                class="form-control"
-                                                id="billingAddress"
-                                                placeholder="Street Address 2"
-                                                th:name="userBillingStreet2"
-                                                th:value="${userBilling.userBillingStreet2}"/>
+                                                    type="text"
+                                                    class="form-control"
+                                                    id="billingAddress"
+                                                    placeholder="Street Address 2"
+                                                    th:name="userBillingStreet2"
+                                                    th:value="${userBilling.userBillingStreet2}"/>
                                         </div>
 
                                         <div class="row">
@@ -520,8 +531,12 @@
                         <div class="panel panel-default" style="border: none;">
                             <div class="panel-body" style="background-color: #ededed; margin-top: 20px;">
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item active"><a th:href="@{/listOfShippingAddresses}" th:style="${listOfShippingAddresses}? 'color:red'">List of Shipping Addresses</a></li>
-                                    <li class="breadcrumb-item active"><a th:href="@{/addNewShippingAddress}" th:style="${addNewShippingAddress}? 'color:red'">Add(Update) Shipping Address</a></li>
+                                    <li class="breadcrumb-item active"><a th:href="@{/listOfShippingAddresses}"
+                                                                          th:style="${listOfShippingAddresses}? 'color:red'">List
+                                        of Shipping Addresses</a></li>
+                                    <li class="breadcrumb-item active"><a th:href="@{/addNewShippingAddress}"
+                                                                          th:style="${addNewShippingAddress}? 'color:red'">Add(Update)
+                                        Shipping Address</a></li>
                                 </ol>
 
                                 <div th:if="${listOfShippingAddresses}">
@@ -544,10 +559,9 @@
                                                 </td>
                                                 <td th:text="${userShipping.userShippingStreet1}+', '+${userShipping.userShippingCity}+', '+${userShipping.userShippingState}"></td>
                                                 <td>
-                                                    <a th:href="@{/updateUserShipping(id=${userShipping.id})}"><i
-                                                            class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a
-                                                        th:href="@{/removeUserShipping(id=${userShipping.id})}"><i
-                                                        class="fa fa-times"></i></a>
+                                                    <a th:href="@{/updateUserShipping(id=${userShipping.id})}"><i class="fa fa-pencil"></i></a>
+                                                    &nbsp;&nbsp;
+                                                    <a th:href="@{/removeUserShipping(id=${userShipping.id})}"><i class="fa fa-times"></i></a>
                                                 </td>
                                             </tr>
                                             </tbody>
@@ -558,12 +572,11 @@
 
                                 <div th:if="${addNewShippingAddress}">
                                     <form th:action="@{/addNewShippingAddress}" method="post">
-                                        <div class="bg-info" th:if="${updateUserShippingInfo}">User
-                                            info updated.
+                                        <div class="bg-info" th:if="${updateUserShippingInfo}">
+                                            User info updated.
                                         </div>
 
-                                        <input hidden="hidden" name="id"
-                                               th:value="${userShipping.id}"/>
+                                        <input hidden="hidden" name="id" th:value="${userShipping.id}"/>
 
                                         <!-- Shipping Address -->
                                         <hr/>
@@ -571,20 +584,21 @@
                                             <h4>Shipping Address</h4>
                                         </div>
                                         <div class="form-group">
-                                            <label for="shippingName">* Name</label> <input type="text"
-                                                                                            class="form-control"
-                                                                                            id="shippingName"
-                                                                                            placeholder="Receiver Name"
-                                                                                            th:name="userShippingName"
-                                                                                            required="required"
-                                                                                            th:value="${userShipping.userShippingName}"/>
+                                            <label for="shippingName">* Name</label>
+                                            <input type="text"
+                                                   class="form-control"
+                                                   id="shippingName"
+                                                   placeholder="Receiver Name"
+                                                   th:name="userShippingName"
+                                                   required="required"
+                                                   th:value="${userShipping.userShippingName}"/>
                                         </div>
                                         <div class="form-group">
-                                            <label for="shippingAddress">* Street Address</label> <input
-                                                type="text" class="form-control" id="shippingAddress"
-                                                placeholder="Street Address 1"
-                                                th:name="userShippingStreet1" required="required"
-                                                th:value="${userShipping.userShippingStreet1}"/> <input
+                                            <label for="shippingAddress">* Street Address</label>
+                                            <input type="text" class="form-control" id="shippingAddress"
+                                                   placeholder="Street Address 1"
+                                                   th:name="userShippingStreet1" required="required"
+                                                   th:value="${userShipping.userShippingStreet1}"/> <input
                                                 type="text" class="form-control"
                                                 placeholder="Street Address 2" th:name="userShppingStreet2"
                                                 th:value="${userShipping.userShippingStreet2}"/>
