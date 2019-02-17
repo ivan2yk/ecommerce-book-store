@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:remove="all">NewUser</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+<p th:text="#{greeting(${name})}">
+    Hello, Peter!
+</p>
+<p>
+    You have been successfully subscribed to the <b>Le's Book Store</b>.
+    Please click on this <a href="#" th:href="${verifyLink}">link</a> to verify your email and edit your personal information.
+</p>
+<p>
+    Your password is: <span th:text="${password}">123</span>
+</p>
+<p>
+    Regards, <br/>
+    <em>Le's Book Store</em>
+</p>
+</body>
+
+</html>
